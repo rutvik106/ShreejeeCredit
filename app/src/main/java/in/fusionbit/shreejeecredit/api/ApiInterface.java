@@ -2,13 +2,11 @@ package in.fusionbit.shreejeecredit.api;
 
 import java.util.List;
 
+import in.fusionbit.shreejeecredit.apimodel.BankAccountNos;
 import in.fusionbit.shreejeecredit.apimodel.ReceiptResponse;
 import in.fusionbit.shreejeecredit.apimodel.Report;
-import in.fusionbit.shreejeecredit.apimodel.Term;
 import in.fusionbit.shreejeecredit.apimodel.UserModel;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -46,6 +44,7 @@ public interface ApiInterface {
                                             @Field("mobile") String contact,
                                             @Field("customer_name") String customerName,
                                             @Field("send_sms") String sendSms,
+                                            @Field("account_no") String bankAccountNo,
                                             @Field("session_id") String sessionId);
 
         @FormUrlEncoded
@@ -56,6 +55,10 @@ public interface ApiInterface {
                                      @Field("payment_mode") String modeOfPayment,
                                      @Field("admin_string") String adminString,
                                      @Field("session_id") String sessionId);
+
+        @FormUrlEncoded
+        @POST("webservice/webservice.php")
+        Call<List<BankAccountNos>> getBankAccountNos(@Field("method") String method);
 
     }
 

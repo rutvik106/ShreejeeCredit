@@ -12,12 +12,14 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.support.v7.widget.AppCompatRadioButton;
+import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -37,9 +39,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import in.fusionbit.shreejeecredit.api.Api;
+import in.fusionbit.shreejeecredit.apimodel.BankAccountNos;
 import in.fusionbit.shreejeecredit.apimodel.ReceiptResponse;
 import in.fusionbit.shreejeecredit.apimodel.Term;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -109,11 +111,17 @@ public class ActivityCreateReceipt extends ActivityBase {
     CheckBox cbSendSms;
     @BindView(R.id.et_customerName)
     TextInputEditText etCustomerName;
+    @BindView(R.id.spin_accountNos)
+    AppCompatSpinner spinAccountNos;
     private String modeOfPayment = CASH;
     private String onAccount = INSTALLMENT;
     private Call<List<Term>> searchBankNames;
     private Call<List<Term>> searchBranchNames;
     private Call<List<Term>> searchContact;
+    private boolean etContactNoClicked = false;
+    private boolean etChequeOrDdBankClicked = false;
+    private boolean etChequeOrDdBranchClicked = false;
+    private Call<List<BankAccountNos>> call;
 
     /*Calendar selectedChequeOrDdDrawnDate = Calendar.getInstance();
     DatePickerDialog datePickerChequeOrDdDrawnDate;*/
@@ -218,6 +226,79 @@ public class ActivityCreateReceipt extends ActivityBase {
             }
         });*/
 
+        setupBankNameListeners();
+
+        setupBankBranchNameListeners();
+
+        setupContactNoListeners();
+
+        checkRights();
+
+        getAccountNos();
+
+
+    }
+
+    private void getAccountNos() {
+
+        call = Api.Receipt.getBankAccountNos(new Callback<List<BankAccountNos>>() {
+            @Override
+            public void onResponse(Call<List<BankAccountNos>> call, Response<List<BankAccountNos>> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        final ArrayAdapter<BankAccountNos> adapter = new ArrayAdapter<BankAccountNos>(ActivityCreateReceipt.this,
+                                android.R.layout.select_dialog_item, response.body()) {
+
+                            @NonNull
+                            @Override
+                            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                                View view = LayoutInflater.from(ActivityCreateReceipt.this)
+                                        .inflate(android.R.layout.select_dialog_item, parent, false);
+                                ((TextView) view.findViewById(android.R.id.text1)).setText(getItem(position).getBank_account());
+                                return view;
+                            }
+
+                            @Override
+                            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                                View view = LayoutInflater.from(ActivityCreateReceipt.this)
+                                        .inflate(android.R.layout.select_dialog_item, parent, false);
+                                ((TextView) view.findViewById(android.R.id.text1)).setText(getItem(position).getBank_account());
+                                return view;
+                            }
+                        };
+
+                        spinAccountNos.setAdapter(adapter);
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<BankAccountNos>> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void setupBankNameListeners() {
+
+        etChequeOrDdBank.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                etChequeOrDdBankClicked = false;
+                return false;
+            }
+        });
+
+        etChequeOrDdBank.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                etChequeOrDdBankClicked = true;
+                etChequeOrDdBank.dismissDropDown();
+                etChequeOrDdBranch.requestFocus();
+            }
+        });
+
         etChequeOrDdBank.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -241,7 +322,7 @@ public class ActivityCreateReceipt extends ActivityBase {
                                             (ActivityCreateReceipt.this, android.R.layout.select_dialog_item, terms);
 
                                     etChequeOrDdBank.setAdapter(adapter);//setting the adapter data into the
-                                    if (charSequence.length() == 3) {
+                                    if (!etChequeOrDdBankClicked) {
                                         etChequeOrDdBank.showDropDown();
                                     }
                                 }
@@ -259,6 +340,26 @@ public class ActivityCreateReceipt extends ActivityBase {
             @Override
             public void afterTextChanged(Editable editable) {
 
+            }
+        });
+    }
+
+    private void setupBankBranchNameListeners() {
+
+        etChequeOrDdBranch.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                etChequeOrDdBranchClicked = false;
+                return false;
+            }
+        });
+
+        etChequeOrDdBranch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                etChequeOrDdBranchClicked = true;
+                etChequeOrDdBranch.dismissDropDown();
+                etChequeOrDdNo.requestFocus();
             }
         });
 
@@ -286,7 +387,7 @@ public class ActivityCreateReceipt extends ActivityBase {
                                                     (ActivityCreateReceipt.this, android.R.layout.select_dialog_item, terms);
 
                                             etChequeOrDdBranch.setAdapter(adapter);//setting the adapter data into the
-                                            if (charSequence.length() == 3) {
+                                            if (!etChequeOrDdBranchClicked) {
                                                 etChequeOrDdBranch.showDropDown();
                                             }
                                         }
@@ -306,10 +407,24 @@ public class ActivityCreateReceipt extends ActivityBase {
 
             }
         });
+    }
+
+    private void setupContactNoListeners() {
+        etContactNo.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                etContactNoClicked = false;
+                return false;
+            }
+        });
 
         etContactNo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                etContactNoClicked = true;
+
+                etCustomerName.requestFocus();
+
                 etContactNo.dismissDropDown();
                 final Term term = (Term) adapterView.getItemAtPosition(i);
 
@@ -373,7 +488,7 @@ public class ActivityCreateReceipt extends ActivityBase {
                                         };
 
                                         etContactNo.setAdapter(adapter);//setting the adapter data into the
-                                        if (charSequence.length() == 3) {
+                                        if (!etContactNoClicked) {
                                             etContactNo.showDropDown();
                                         }
                                     }
@@ -394,10 +509,6 @@ public class ActivityCreateReceipt extends ActivityBase {
 
             }
         });
-
-        checkRights();
-
-
     }
 
     private void checkRights() {
@@ -486,6 +597,10 @@ public class ActivityCreateReceipt extends ActivityBase {
 
     private void submitReceipt() {
 
+        final BankAccountNos bankAccountNo = (BankAccountNos) spinAccountNos.getSelectedItem();
+
+        final String selectedBankAccountId = bankAccountNo.getBank_ac_id();
+
         String sendSms = "0";
         if (cbSendSms.isChecked()) {
             sendSms = "1";
@@ -499,6 +614,7 @@ public class ActivityCreateReceipt extends ActivityBase {
                 etContactNo.getText().toString(),
                 etCustomerName.getText().toString(),
                 sendSms,
+                selectedBankAccountId,
                 new Callback<ReceiptResponse>() {
                     @Override
                     public void onResponse(Call<ReceiptResponse> call, Response<ReceiptResponse> response) {
@@ -526,10 +642,20 @@ public class ActivityCreateReceipt extends ActivityBase {
 
     @Override
     protected void onDestroy() {
+        cancelGetAccountNosCall();
         cancelSearchBankCall();
         cancelSearchBranchCall();
         cancelSearchContactCall();
         super.onDestroy();
+    }
+
+    private void cancelGetAccountNosCall() {
+        if (call != null) {
+            if (!call.isCanceled()) {
+                call.cancel();
+            }
+            call = null;
+        }
     }
 
     private void cancelSearchBankCall() {
