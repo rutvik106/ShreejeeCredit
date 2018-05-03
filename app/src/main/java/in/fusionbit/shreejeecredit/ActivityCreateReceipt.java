@@ -550,10 +550,10 @@ public class ActivityCreateReceipt extends ActivityBase {
             etAmount.setError("Required");
             valid = false;
         }*/
-        if (TextUtils.isEmpty(etContactNo.getText())) {
+        /*if (TextUtils.isEmpty(etContactNo.getText())) {
             etContactNo.setError("Required");
             valid = false;
-        }
+        }*/
         if (TextUtils.isEmpty(etCustomerName.getText())) {
             etCustomerName.setError("Required");
             valid = false;
@@ -579,6 +579,8 @@ public class ActivityCreateReceipt extends ActivityBase {
         }
         if (valid) {
             confirmSubmit();
+        }else {
+            Toast.makeText(this, "Required fields cannot ne empty.", Toast.LENGTH_SHORT).show();
         }
     }
 
