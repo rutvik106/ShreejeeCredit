@@ -3,16 +3,12 @@ package in.fusionbit.shreejeecredit;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -67,7 +63,7 @@ public class ActivityHome extends ActivityBase {
         context.startActivity(i);
     }
 
-    @OnClick({R.id.cv_createReceipt, R.id.cv_searchReceipt})
+    @OnClick({R.id.cv_createReceipt, R.id.cv_searchReceipt,R.id.cv_addNewFile})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.cv_createReceipt:
@@ -75,6 +71,9 @@ public class ActivityHome extends ActivityBase {
                 break;
             case R.id.cv_searchReceipt:
                 ActivitySearchReceipt.start(this);
+                break;
+            case R.id.cv_addNewFile:
+                ActivityAddNewFile.start(this);
                 break;
         }
     }

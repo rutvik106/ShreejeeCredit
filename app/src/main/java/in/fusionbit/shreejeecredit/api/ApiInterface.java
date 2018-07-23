@@ -3,6 +3,7 @@ package in.fusionbit.shreejeecredit.api;
 import java.util.List;
 
 import in.fusionbit.shreejeecredit.apimodel.BankAccountNos;
+import in.fusionbit.shreejeecredit.apimodel.FileResponse;
 import in.fusionbit.shreejeecredit.apimodel.ReceiptResponse;
 import in.fusionbit.shreejeecredit.apimodel.Report;
 import in.fusionbit.shreejeecredit.apimodel.UserModel;
@@ -59,6 +60,18 @@ public interface ApiInterface {
         @FormUrlEncoded
         @POST("webservice/webservice.php")
         Call<List<BankAccountNos>> getBankAccountNos(@Field("method") String method);
+
+        @FormUrlEncoded
+        @POST("webservice/webservice.php")
+        Call<FileResponse> saveNewFile(@Field("method") String method,
+                                       @Field("file_date") String fileDate,
+                                       @Field("customer_name") String customerName,
+                                       @Field("vehicle_model") String vehicleModel,
+                                       @Field("loan_amount") String loanAmount,
+                                       @Field("net_payment") String netPayment,
+                                       @Field("broker_name") String brokerName,
+                                       @Field("remarks") String remarks,
+                                       @Field("session_id") String sessionId);
 
     }
 

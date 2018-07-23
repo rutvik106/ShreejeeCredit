@@ -39,6 +39,7 @@
         <activity
             android:name=".ActivityPrintReceipt"
             android:screenOrientation="portrait" />
+        <activity android:name=".ActivityAddNewFile"></activity>
     </application>
 
 </manifest>

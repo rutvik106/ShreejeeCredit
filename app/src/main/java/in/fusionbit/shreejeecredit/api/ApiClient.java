@@ -3,6 +3,7 @@ package in.fusionbit.shreejeecredit.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import in.fusionbit.shreejeecredit.BuildConfig;
 import in.fusionbit.shreejeecredit.Constants;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -20,15 +21,16 @@ public class ApiClient {
     static Retrofit getClient() {
         if (retrofit == null) {
 
-            //Create Logging interceptor
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
             //Create OkHttp Client
-            OkHttpClient httpClient = new OkHttpClient.Builder()
-                    //Set Logging interceptor
-                    .addInterceptor(loggingInterceptor)
-                    .build();
+            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+
+            //Set Logging interceptor
+            if (BuildConfig.DEBUG) {
+                //Create Logging interceptor
+                HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+                loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+                httpClient.addInterceptor(loggingInterceptor);
+            }
 
             //Create GSON  for JSON parsing
             Gson gson = new GsonBuilder()
@@ -38,7 +40,7 @@ public class ApiClient {
             //Create Retrofit instance
             retrofit = new Retrofit.Builder()
                     .baseUrl(Constants.API_BASE_URL)
-                    .client(httpClient)
+                    .client(httpClient.build())
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
 
