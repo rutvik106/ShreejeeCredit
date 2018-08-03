@@ -4,19 +4,32 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import in.fusionbit.shreejeecredit.api.Api;
+import in.fusionbit.shreejeecredit.apimodel.BrokerName;
 import in.fusionbit.shreejeecredit.apimodel.FileResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,12 +48,15 @@ public class ActivityAddNewFile extends ActivityBase {
     @BindView(R.id.et_fileNetPayment)
     TextInputEditText etFileNetPayment;
     @BindView(R.id.et_fileDealerName)
-    AppCompatAutoCompleteTextView etFileDealerName;
+    AppCompatAutoCompleteTextView actFileDealerName;
     @BindView(R.id.et_fileRemarks)
     TextInputEditText etFileRemarks;
 
     private DatePickerDialog fileDatePickerDialog;
     private Calendar selectedFileDate = Calendar.getInstance();
+
+    private boolean etContactNoClicked = false;
+    private Call<List<BrokerName>> searchBroker;
 
 
     @Override
@@ -86,7 +102,119 @@ public class ActivityAddNewFile extends ActivityBase {
 
         setFileDate();
 
+
+        actFileDealerName.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                etContactNoClicked = false;
+                return false;
+            }
+        });
+
+        actFileDealerName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                etContactNoClicked = true;
+
+                actFileDealerName.requestFocus();
+
+                actFileDealerName.dismissDropDown();
+                final BrokerName term = (BrokerName) adapterView.getItemAtPosition(i);
+
+                //Toast.makeText(ActivityCreateReceipt.this, term, Toast.LENGTH_SHORT).show();
+
+                if (term != null) {
+                    if (!term.getBroker_name().isEmpty()) {
+                        Log.i(App.APP_TAG, term.getBroker_name());
+                        final String name = term.getBroker_name();
+
+                        actFileDealerName.setText(name);
+                    }
+                }
+            }
+        });
+
+
+        actFileDealerName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() > 1) {
+                    cancelBrokerSearchCall();
+
+                    searchBroker = Api.Receipt.getBrokerNamesLike(charSequence.toString(),
+                            new Callback<List<BrokerName>>() {
+                                @Override
+                                public void onResponse(Call<List<BrokerName>> call, Response<List<BrokerName>> response) {
+                                    if (response.body() != null) {
+
+                                        final ArrayAdapter<BrokerName> adapter = new ArrayAdapter<BrokerName>
+                                                (ActivityAddNewFile.this,
+                                                        android.R.layout.select_dialog_item, response.body()) {
+
+                                            @NonNull
+                                            @Override
+                                            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                                                View view = LayoutInflater.from(ActivityAddNewFile.this)
+                                                        .inflate(android.R.layout.select_dialog_item, parent, false);
+                                                ((TextView) view.findViewById(android.R.id.text1)).setText(getItem(position).getBroker_name());
+                                                return view;
+                                            }
+
+                                            @Override
+                                            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                                                View view = LayoutInflater.from(ActivityAddNewFile.this)
+                                                        .inflate(android.R.layout.select_dialog_item, parent, false);
+                                                ((TextView) view.findViewById(android.R.id.text1)).setText(getItem(position).getBroker_name());
+                                                return view;
+                                            }
+                                        };
+
+                                        actFileDealerName.setAdapter(adapter);//setting the adapter data into the
+                                        if (!etContactNoClicked) {
+                                            actFileDealerName.showDropDown();
+                                        }
+                                    }
+
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<List<BrokerName>> call, Throwable t) {
+                                    if (!call.isCanceled()) {
+                                        Toast.makeText(ActivityAddNewFile.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                }else {
+                    actFileDealerName.setAdapter(null);
+                    actFileDealerName.dismissDropDown();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+
     }
+
+    private void cancelBrokerSearchCall() {
+        if (searchBroker != null) {
+            if (!searchBroker.isCanceled()) {
+                searchBroker.cancel();
+            }
+            searchBroker = null;
+        }
+    }
+
 
     private void setFileDate() {
         String date = selectedFileDate.get(Calendar.DAY_OF_MONTH) + "/" +
@@ -114,7 +242,7 @@ public class ActivityAddNewFile extends ActivityBase {
             final String vehicleModel = etFileVehicleModel.getText().toString();
             final String loanAmount = etFileLoanAmount.getText().toString();
             final String netPayment = etFileNetPayment.getText().toString();
-            final String dealerName = etFileDealerName.getText().toString();
+            final String dealerName = actFileDealerName.getText().toString();
             final String remarks = etFileRemarks.getText().toString();
 
             Api.Receipt.addNewFile(date, customerName, vehicleModel, loanAmount, netPayment,
@@ -159,8 +287,8 @@ public class ActivityAddNewFile extends ActivityBase {
             valid = false;
         }
 
-        if (etFileDealerName.getText().toString().isEmpty()) {
-            etFileDealerName.setError("Required");
+        if (actFileDealerName.getText().toString().isEmpty()) {
+            actFileDealerName.setError("Required");
             valid = false;
         }
 

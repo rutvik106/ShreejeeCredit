@@ -3,6 +3,7 @@ package in.fusionbit.shreejeecredit.api;
 import java.util.List;
 
 import in.fusionbit.shreejeecredit.apimodel.BankAccountNos;
+import in.fusionbit.shreejeecredit.apimodel.BrokerName;
 import in.fusionbit.shreejeecredit.apimodel.FileResponse;
 import in.fusionbit.shreejeecredit.apimodel.ReceiptResponse;
 import in.fusionbit.shreejeecredit.apimodel.Report;
@@ -72,6 +73,11 @@ public interface ApiInterface {
                                        @Field("broker_name") String brokerName,
                                        @Field("remarks") String remarks,
                                        @Field("session_id") String sessionId);
+
+        @FormUrlEncoded
+        @POST("webservice/webservice.php")
+        Call<List<BrokerName>> getBrokerNamesLike(@Field("method") String method,
+                                                  @Field("name_like") String name);
 
     }
 

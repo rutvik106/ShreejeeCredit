@@ -5,6 +5,7 @@ import java.util.List;
 
 import in.fusionbit.shreejeecredit.App;
 import in.fusionbit.shreejeecredit.apimodel.BankAccountNos;
+import in.fusionbit.shreejeecredit.apimodel.BrokerName;
 import in.fusionbit.shreejeecredit.apimodel.FileResponse;
 import in.fusionbit.shreejeecredit.apimodel.ReceiptResponse;
 import in.fusionbit.shreejeecredit.apimodel.Report;
@@ -88,6 +89,14 @@ public class Api {
                                                     final Callback<FileResponse> callback) {
             Call<FileResponse> call = receipt.saveNewFile("add_file", fileDate, customerName, vehicleModel, loanAmount,
                     netPayment, brokerName, remarks, sessionId);
+            call.enqueue(callback);
+            return call;
+        }
+
+        public static Call<List<BrokerName>> getBrokerNamesLike(final String name,
+                                                                final Callback<List<BrokerName>> callback) {
+
+            Call<List<BrokerName>> call = receipt.getBrokerNamesLike("get_broker_name_like", name);
             call.enqueue(callback);
             return call;
         }

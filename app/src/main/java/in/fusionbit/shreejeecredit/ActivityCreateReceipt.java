@@ -100,7 +100,7 @@ public class ActivityCreateReceipt extends ActivityBase {
     Calendar selectedChequeOrDdDate = Calendar.getInstance();
     DatePickerDialog datePickerChequeOrDdDate;
     @BindView(R.id.et_chequeOrDdBranch)
-    AppCompatAutoCompleteTextView etChequeOrDdBranch;
+    AppCompatAutoCompleteTextView actChequeOrDdBranch;
     @BindView(R.id.til_chequeOrDdBranch)
     TextInputLayout tilChequeOrDdBranch;
     @BindView(R.id.et_receiptDate)
@@ -295,7 +295,7 @@ public class ActivityCreateReceipt extends ActivityBase {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 etChequeOrDdBankClicked = true;
                 etChequeOrDdBank.dismissDropDown();
-                etChequeOrDdBranch.requestFocus();
+                actChequeOrDdBranch.requestFocus();
             }
         });
 
@@ -346,7 +346,7 @@ public class ActivityCreateReceipt extends ActivityBase {
 
     private void setupBankBranchNameListeners() {
 
-        etChequeOrDdBranch.setOnTouchListener(new View.OnTouchListener() {
+        actChequeOrDdBranch.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 etChequeOrDdBranchClicked = false;
@@ -354,16 +354,16 @@ public class ActivityCreateReceipt extends ActivityBase {
             }
         });
 
-        etChequeOrDdBranch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        actChequeOrDdBranch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 etChequeOrDdBranchClicked = true;
-                etChequeOrDdBranch.dismissDropDown();
+                actChequeOrDdBranch.dismissDropDown();
                 etChequeOrDdNo.requestFocus();
             }
         });
 
-        etChequeOrDdBranch.addTextChangedListener(new TextWatcher() {
+        actChequeOrDdBranch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -386,9 +386,9 @@ public class ActivityCreateReceipt extends ActivityBase {
                                             ArrayAdapter<String> adapter = new ArrayAdapter<String>
                                                     (ActivityCreateReceipt.this, android.R.layout.select_dialog_item, terms);
 
-                                            etChequeOrDdBranch.setAdapter(adapter);//setting the adapter data into the
+                                            actChequeOrDdBranch.setAdapter(adapter);//setting the adapter data into the
                                             if (!etChequeOrDdBranchClicked) {
-                                                etChequeOrDdBranch.showDropDown();
+                                                actChequeOrDdBranch.showDropDown();
                                             }
                                         }
                                     }
@@ -564,8 +564,8 @@ public class ActivityCreateReceipt extends ActivityBase {
                 etChequeOrDdBank.setError("Required");
                 valid = false;
             }*/
-            /*if (TextUtils.isEmpty(etChequeOrDdBranch.getText())) {
-                etChequeOrDdBranch.setError("Required");
+            /*if (TextUtils.isEmpty(actChequeOrDdBranch.getText())) {
+                actChequeOrDdBranch.setError("Required");
                 valid = false;
             }*/
             if (TextUtils.isEmpty(etChequeOrDdNo.getText())) {
@@ -611,7 +611,7 @@ public class ActivityCreateReceipt extends ActivityBase {
         showProgressDialog("Submitting Receipt...", "Please Wait...");
         Api.Receipt.submitReceipt(etReceiptDate.getText().toString(), etAcNo.getText().toString(),
                 etReceivedFrom.getText().toString(), etAmount.getText().toString(), modeOfPayment,
-                etChequeOrDdNo.getText().toString(), etChequeOrDdBank.getText().toString(), etChequeOrDdBranch.getText().toString(),
+                etChequeOrDdNo.getText().toString(), etChequeOrDdBank.getText().toString(), actChequeOrDdBranch.getText().toString(),
                 etChequeOrDdDate.getText().toString(), onAccount, etRemarks.getText().toString(),
                 etContactNo.getText().toString(),
                 etCustomerName.getText().toString(),
