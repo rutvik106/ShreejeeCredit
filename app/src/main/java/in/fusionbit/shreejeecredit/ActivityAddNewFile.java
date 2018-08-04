@@ -146,7 +146,7 @@ public class ActivityAddNewFile extends ActivityBase {
                 if (charSequence.length() > 1) {
                     cancelBrokerSearchCall();
 
-                    searchBroker = Api.Receipt.getBrokerNamesLike(charSequence.toString(),
+                    searchBroker = Api.Term.getBrokerNamesLike(charSequence.toString(),
                             new Callback<List<BrokerName>>() {
                                 @Override
                                 public void onResponse(Call<List<BrokerName>> call, Response<List<BrokerName>> response) {

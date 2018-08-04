@@ -63,7 +63,7 @@ public class ActivityHome extends ActivityBase {
         context.startActivity(i);
     }
 
-    @OnClick({R.id.cv_createReceipt, R.id.cv_searchReceipt,R.id.cv_addNewFile})
+    @OnClick({R.id.cv_createReceipt, R.id.cv_searchReceipt,R.id.cv_addNewFile,R.id.cv_fileReports})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.cv_createReceipt:
@@ -74,6 +74,9 @@ public class ActivityHome extends ActivityBase {
                 break;
             case R.id.cv_addNewFile:
                 ActivityAddNewFile.start(this);
+                break;
+            case R.id.cv_fileReports:
+                ActivityFileReportOptions.start(this);
                 break;
         }
     }

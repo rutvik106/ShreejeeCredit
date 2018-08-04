@@ -4,6 +4,7 @@ import java.util.List;
 
 import in.fusionbit.shreejeecredit.apimodel.BankAccountNos;
 import in.fusionbit.shreejeecredit.apimodel.BrokerName;
+import in.fusionbit.shreejeecredit.apimodel.FileReport;
 import in.fusionbit.shreejeecredit.apimodel.FileResponse;
 import in.fusionbit.shreejeecredit.apimodel.ReceiptResponse;
 import in.fusionbit.shreejeecredit.apimodel.Report;
@@ -76,8 +77,12 @@ public interface ApiInterface {
 
         @FormUrlEncoded
         @POST("webservice/webservice.php")
-        Call<List<BrokerName>> getBrokerNamesLike(@Field("method") String method,
-                                                  @Field("name_like") String name);
+        Call<List<FileReport>> getFileReport(@Field("method") String method,
+                                             @Field("from") String from,
+                                             @Field("to") String to,
+                                             @Field("received") String received,
+                                             @Field("admin_string") String adminString,
+                                             @Field("session_id") String sessionId);
 
     }
 
@@ -90,6 +95,11 @@ public interface ApiInterface {
 
         @GET("json/payment_customer_mobile_new.php")
         Call<List<in.fusionbit.shreejeecredit.apimodel.Term>> getContacts(@Query("term") String mobileNo);
+
+        @FormUrlEncoded
+        @POST("webservice/webservice.php")
+        Call<List<BrokerName>> getBrokerNamesLike(@Field("method") String method,
+                                                  @Field("name_like") String name);
     }
 
 

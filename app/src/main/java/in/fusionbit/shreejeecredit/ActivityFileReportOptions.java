@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -25,27 +24,22 @@ import in.fusionbit.shreejeecredit.adapter.CheckSpinnerAdapter;
 import in.fusionbit.shreejeecredit.apimodel.UserModel;
 import in.fusionbit.shreejeecredit.model.CheckSpinnerModel;
 
-import static in.fusionbit.shreejeecredit.Constants.ModeOfPayment.ALL;
+public class ActivityFileReportOptions extends ActivityBase {
 
-
-public class ActivitySearchReceipt extends ActivityBase {
-
-    @BindView(R.id.et_fromDate)
-    TextInputEditText etFromDate;
-    @BindView(R.id.et_toDate)
-    TextInputEditText etToDate;
-    @BindView(R.id.spin_users)
-    Spinner spinUsers;
-    @BindView(R.id.report_rb_cash)
-    RadioButton reportRbCash;
-    @BindView(R.id.report_rb_cheque)
-    RadioButton reportRbCheque;
-    @BindView(R.id.report_rb_all)
-    RadioButton reportRbAll;
-    @BindView(R.id.report_rg_modeOfPayment)
-    RadioGroup reportRgModeOfPayment;
-    @BindView(R.id.btn_generateReport)
-    Button btnGenerateReport;
+    @BindView(R.id.et_fileFromDate)
+    TextInputEditText etFileFromDate;
+    @BindView(R.id.et_fileToDate)
+    TextInputEditText etFileToDate;
+    @BindView(R.id.tv_selectUserFile)
+    TextView tvSelectUserFile;
+    @BindView(R.id.spin_usersFile)
+    Spinner spinUsersFile;
+    @BindView(R.id.report_rb_received)
+    RadioButton reportRbReceived;
+    @BindView(R.id.report_rb_notReceived)
+    RadioButton reportRbNotReceived;
+    @BindView(R.id.report_rg_receivedStatus)
+    RadioGroup reportRgReceivedStatus;
 
     Calendar fromDate = Calendar.getInstance();
     DatePickerDialog datePickerFromDate;
@@ -55,22 +49,19 @@ public class ActivitySearchReceipt extends ActivityBase {
 
     CheckSpinnerAdapter adapter;
 
-    String modeOfPayment = ALL;
-
-    @BindView(R.id.tv_selectUser)
-    TextView tvSelectUser;
-
+    private String receivedStatus = "1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search_receipt);
+        setContentView(R.layout.activity_file_report_options);
         ButterKnife.bind(this);
-        setTitle("Receipt Reports");
 
-        if(getSupportActionBar()!=null) {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("File Report");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
 
         datePickerFromDate = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -80,21 +71,21 @@ public class ActivitySearchReceipt extends ActivityBase {
                 fromDate.set(Calendar.MONTH, monthOfYear);
                 fromDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 String date = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
-                etFromDate.setText(date);
+                etFileFromDate.setText(date);
             }
         }, fromDate.get(Calendar.YEAR), fromDate.get(Calendar.MONTH),
                 fromDate.get(Calendar.DAY_OF_MONTH));
 
         //datePickerFromDate.getDatePicker().setMinDate(Calendar.getInstance().getTimeInMillis());
 
-        etFromDate.setOnClickListener(new View.OnClickListener() {
+        etFileFromDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 datePickerFromDate.show();
             }
         });
 
-        etFromDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        etFileFromDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean focus) {
                 if (focus) {
@@ -111,21 +102,21 @@ public class ActivitySearchReceipt extends ActivityBase {
                 toDate.set(Calendar.MONTH, monthOfYear);
                 toDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 String date = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
-                etToDate.setText(date);
+                etFileToDate.setText(date);
             }
         }, toDate.get(Calendar.YEAR), toDate.get(Calendar.MONTH),
                 toDate.get(Calendar.DAY_OF_MONTH));
 
         //datePickerToDate.getDatePicker().setMinDate(Calendar.getInstance().getTimeInMillis());
 
-        etToDate.setOnClickListener(new View.OnClickListener() {
+        etFileToDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 datePickerToDate.show();
             }
         });
 
-        etToDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        etFileToDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean focus) {
                 if (focus) {
@@ -140,8 +131,8 @@ public class ActivitySearchReceipt extends ActivityBase {
                 App.getCurrentUser().getUser().getAdmin_rights()
                         .contains(Constants.UserRights.FULL)) {
 
-            tvSelectUser.setVisibility(View.VISIBLE);
-            spinUsers.setVisibility(View.VISIBLE);
+            tvSelectUserFile.setVisibility(View.VISIBLE);
+            spinUsersFile.setVisibility(View.VISIBLE);
 
             final List<CheckSpinnerModel> models = new ArrayList<>();
 
@@ -155,25 +146,31 @@ public class ActivitySearchReceipt extends ActivityBase {
 
             adapter = new CheckSpinnerAdapter(this, 0, models);
 
-            spinUsers.setAdapter(adapter);
+            spinUsersFile.setAdapter(adapter);
         }
 
 
-        reportRgModeOfPayment.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        reportRgReceivedStatus.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int id) {
-                if (id == R.id.report_rb_all) {
-                    modeOfPayment = ALL;
-                } else if (id == R.id.report_rb_cheque) {
-                    modeOfPayment = Constants.ModeOfPayment.CHEQUE;
-                } else if (id == R.id.report_rb_cash) {
-                    modeOfPayment = Constants.ModeOfPayment.CASH;
+                if (id == R.id.report_rb_received) {
+                    receivedStatus = "1";
+                } else if (id == R.id.report_rb_notReceived) {
+                    receivedStatus = "0";
                 }
             }
         });
 
+        reportRbReceived.setChecked(true);
+
     }
 
+
+    @OnClick(R.id.btn_generateFileReport)
+    public void onViewClicked() {
+        ActivityFileReport.start(this, etFileFromDate.getText().toString(),
+                etFileToDate.getText().toString(), adapter != null ? adapter.getSelectedUsers() : "", receivedStatus);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -184,18 +181,8 @@ public class ActivitySearchReceipt extends ActivityBase {
     }
 
     public static void start(final Context context) {
-        Intent i = new Intent(context, ActivitySearchReceipt.class);
+        Intent i = new Intent(context, ActivityFileReportOptions.class);
         context.startActivity(i);
     }
-
-
-
-    @OnClick(R.id.btn_generateReport)
-    public void onViewClicked() {
-        ActivityReport.start(this, etFromDate.getText().toString(),
-                etToDate.getText().toString(), modeOfPayment,
-                adapter != null ? adapter.getSelectedUsers() : "");
-    }
-
 
 }

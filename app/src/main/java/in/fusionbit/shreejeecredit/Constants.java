@@ -16,10 +16,10 @@ public class Constants {
     //private static final String HOST = "192.168.0.104";
 
     //JEET WIFI
-    private static final String HOST = "192.168.0.102/shreejee_quick_receipt";
+    //private static final String HOST = "192.168.0.102/shreejee_quick_receipt";
 
     //GLOBAL
-    //private static final String HOST = "shreejee.tapandtype.com";
+    private static final String HOST = "shreejee.tapandtype.com";
 
     public static final String API_BASE_URL = "http://" + HOST + "/";
 

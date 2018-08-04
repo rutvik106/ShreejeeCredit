@@ -39,7 +39,15 @@
         <activity
             android:name=".ActivityPrintReceipt"
             android:screenOrientation="portrait" />
-        <activity android:name=".ActivityAddNewFile"></activity>
+        <activity
+            android:name=".ActivityAddNewFile"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ActivityFileReportOptions"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ActivityFileReport"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
