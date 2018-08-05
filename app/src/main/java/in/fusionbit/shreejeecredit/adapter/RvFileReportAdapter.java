@@ -41,6 +41,10 @@ public class RvFileReportAdapter extends RecyclerView.Adapter {
         return fileReportList.size();
     }
 
+    public List<FileReport> getFileReportList() {
+        return fileReportList;
+    }
+
     public void clear() {
         fileReportList.clear();
         notifyDataSetChanged();
