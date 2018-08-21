@@ -191,7 +191,7 @@ public class ActivityAddNewFile extends ActivityBase {
                                 }
                             });
 
-                }else {
+                } else {
                     actFileDealerName.setAdapter(null);
                     actFileDealerName.dismissDropDown();
                 }
@@ -218,7 +218,7 @@ public class ActivityAddNewFile extends ActivityBase {
 
     private void setFileDate() {
         String date = selectedFileDate.get(Calendar.DAY_OF_MONTH) + "/" +
-                selectedFileDate.get(Calendar.MONTH) + "/" + selectedFileDate.get(Calendar.YEAR);
+                (selectedFileDate.get(Calendar.MONTH) + 1) + "/" + selectedFileDate.get(Calendar.YEAR);
         etFileDate.setText(date);
     }
 
